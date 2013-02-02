@@ -13,6 +13,7 @@ char *ca =0;
 char *svuser =0;
 char *root =0;
 unsigned int client =0;
+unsigned long quit =0;
 int pid;
 struct uidgid ugid;
 struct uidgid sslugid;

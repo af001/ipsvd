@@ -20,8 +20,8 @@
 #include "sslerror_str.h"
 #include "ssl_io.h"
 
-#define USAGEROOT " -u user [-U user] [-/ root] [-C cert] [-K key] [-A ca] [-vc] prog"
-#define USAGE " [-C cert] [-K key] [-A ca] [-cv] prog"
+#define USAGEROOT " -u user [-U user] [-/ root] [-C cert] [-K key] [-A ca] [-q seconds] [-vc] prog"
+#define USAGE " [-C cert] [-K key] [-A ca] [-q seconds] [-cv] prog"
 #define VERSION "$Id: c08b30d00b9743c5bd24fa59a281a90dd4c742c4 $"
 
 const char *progname;
@@ -39,7 +39,7 @@ int main(int argc, const char **argv) {
   pid =getpid();
   id[fmt_ulong(id, pid)] =0;
 
-  while ((opt =getopt(argc, argv, "u:U:/:C:K:A:cvV")) != opteof) {
+  while ((opt =getopt(argc, argv, "u:U:/:C:K:A:cvVq:")) != opteof) {
     switch(opt) {
     case 'u': ssluser =(char*)optarg; break;
     case 'U': svuser =(char*)optarg; break;
@@ -48,6 +48,7 @@ int main(int argc, const char **argv) {
     case 'K': key =(char*)optarg; break;
     case 'c': client =1; break;
     case 'A': ca =(char*)optarg; break;
+    case 'q': scan_ulong(optarg, &quit); break;
     case 'v': ++verbose; break;
     case 'V': strerr_warn1(VERSION, 0);
     case '?': usage();

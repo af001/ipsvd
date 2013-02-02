@@ -12,7 +12,7 @@
 sslio - SSL input/output for service programs 
 <h2><a name='sect1'>Synopsis</a></h2>
 <b>sslio</b> [-cv] [-u
-<i>user</i>] [-U <i>user</i>] [-/ <i>root</i>] [-C <i>cert</i>] [-K <i>key</i>] [-A <i>ca</i>] <i>prog</i> 
+<i>user</i>] [-U <i>user</i>] [-/ <i>root</i>] [-C <i>cert</i>] [-K <i>key</i>] [-A <i>ca</i>] [-q <i>seconds</i>] <i>prog</i>
 <h2><a name='sect2'>Description</a></h2>
 <b>sslio</b> provides
 SSL encrypted network connections for service programs started by <i><b>tcpsvd</b>(8)</i>
@@ -82,6 +82,9 @@ read. </dd>
 the file <i>ca</i>. Multiple files can be specified, using a semicolon as delimiter.
 If the -/ option is given, first the root directory is changed, then the
 ca file is read. </dd>
+
+<dt><b>-q <i>seconds</b> </i></dt>
+<dd>after EOF on stdin, wait the specified number of seconds and then quit. </dd>
 
 <dt><b>-c</b> </dt>
 <dd>client mode. This option must be given when running <b>sslio</b>

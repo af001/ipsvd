@@ -1,5 +1,6 @@
 #include <sys/types.h>
 #include <unistd.h>
+#include <sys/socket.h>
 #include "matrixSsl.h"
 #include "uidgid.h"
 #include "prot.h"
@@ -67,6 +68,7 @@ extern char *ca;
 extern char *svuser;
 extern char *root;
 extern unsigned int client;
+extern unsigned long quit;
 extern unsigned int verbose;
 extern struct uidgid ugid, sslugid;
 extern ssl_t *ssl;
@@ -101,6 +103,11 @@ static char *bad_certificate;
 
 static void sig_term_handler(void) {
   if (verbose) info("sigterm received, exit.");
+  finish();
+  _exit(0);
+}
+static void quit_handler(void) {
+  if (verbose) info("quit.");
   finish();
   _exit(0);
 }
@@ -160,8 +167,22 @@ void encode(void) {
     fatal("unable to read from prog");
   if (len == 0) {
     if (verbose > 2) info("eof reading from proc");
-    finish();
-    _exit(0);
+    if (quit == 0) {
+      finish();
+      _exit(0);
+    } else {
+      close(encpipe[0]); encpipe[0] = -1;
+      if (shutdown(fdstdou, SHUT_WR) == 0) {
+	fdstdou =-1;
+	if (verbose > 2) info("shutdown network");
+      } else {
+	if (verbose > 2) info("close network");
+	close(fdstdou); fdstdou =-1;
+      }
+      sig_catch(sig_alarm, quit_handler);
+      alarm(quit);
+      return;
+    }
   }
   for (;;) {
     rc =matrixSslEncode(ssl, encin.buf, len, &encou);

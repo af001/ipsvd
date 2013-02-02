@@ -16,6 +16,8 @@ sslio \- SSL input/output for service programs
 .IR key ]
 [\-A
 .IR ca ]
+[\-q
+.IR seconds ]
 .I prog
 .SH DESCRIPTION
 .B sslio
@@ -166,6 +168,9 @@ Read the trusted root certificate from the file
 Multiple files can be specified, using a semicolon as delimiter.
 If the \-/ option is given, first the root directory is changed, then the
 ca file is read.
+.TP
+.B \-q \fIseconds
+after EOF on stdin, wait the specified number of seconds and then quit.
 .TP
 .B \-c
 client mode.
