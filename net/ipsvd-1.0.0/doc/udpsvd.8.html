@@ -1,0 +1,140 @@
+
+
+
+<html>
+<head>
+<title>udpsvd(8) manual page</title>
+</head>
+<body bgcolor='white'>
+<a href='http://smarden.org/pape/'>G. Pape</a><br><a href='index.html'>ipsvd</a><hr>
+
+<h2><a name='sect0'>Name</a></h2>
+udpsvd - UDP/IP service daemon 
+<h2><a name='sect1'>Synopsis</a></h2>
+<b>udpsvd</b> [-hpvv] [-u <i>user]</i> [-l <i>name]</i>
+[-i <i>dir</i>|-x <i>cdb</i>] [-t <i>sec</i>] <i>host</i> <i>port</i> <i>prog</i> 
+<h2><a name='sect2'>Description</a></h2>
+<b>udpsvd</b> creates an UDP/IP
+socket, binds it to the address <i>host</i>:<i>port</i>, and listens on the socket for
+incoming datagrams. <p>
+If a datagram is available on the socket, <b>udpsvd</b> conditionally
+starts a program, with standard input reading from the socket, and standard
+output redirected to standard error, to handle this, and possibly more
+datagrams. <b>udpsvd</b> does not start the program if another program that it
+has started before still is running. If the program exits, <b>udpsvd</b> again
+listens to the socket until a new datagram is available. If there are still
+datagrams available on the socket, the program is restarted immediately.
+<p>
+<b>udpsvd</b> optionally checks for special intructions depending on the IP address
+or hostname of the client sending the datagram which not yet was handled
+by a running program, see <i><b>ipsvd-instruct</b>(5)</i> for details. <p>
+
+<h3><a name='sect3'>Attention:</a></h3>
+UDP is
+a connectionless protocol. Most programs that handle user datagrams, such
+as <i><b>talkd</b>(8)</i>, keep running after receiving a datagram, and process subsequent
+datagrams sent to the socket until a timeout is reached. <b>udpsvd</b> only checks
+special instructions for a datagram that causes a startup of the program;
+not if a program handling datagrams already is running. It doesn&rsquo;t make much
+sense to restrict access through special instructions when using such a
+program. <p>
+On the other hand, it makes perfectly sense with programs like
+<i><b>tftpd</b>(8)</i>, that fork to establish a separate connection to the client when
+receiving the datagram. In general it&rsquo;s adequate to set up special instructions
+for programs that support being run by tcpwrapper. 
+<h2><a name='sect4'>Options</a></h2>
+
+<dl>
+
+<dt><i>host</i> </dt>
+<dd><i>host</i> either
+is a hostname, or a dotted-decimal IP address, or 0. If <i>host</i> is 0, <b>udpsvd</b>
+accepts datagrams to any local IP address. </dd>
+
+<dt><i>port</i> </dt>
+<dd><b>udpsvd</b> accepts datagrams
+to <i>host</i>:<i>port</i>. <i>port</i> may be a name from /etc/services or a number. </dd>
+
+<dt><i>prog</i> </dt>
+<dd><i>prog</i>
+consists of one or more arguments. <b>udpsvd</b> normally runs <i>prog</i> to handle a
+datagram, and possibly more, that is sent to the socket, if there is no
+program that was started before by <b>udpsvd</b> still running and handling datagrams.
+</dd>
+
+<dt><b>-i <i>dir</b> </i></dt>
+<dd>read instructions for handling new connections from the instructions
+directory <i>dir</i>. See <i><b>ipsvd-instruct</b>(5)</i> for details. </dd>
+
+<dt><b>-x <i>cdb</b> </i></dt>
+<dd>read instructions
+for handling new connections from the constant database <i>cdb</i>. The constant
+database normally is created from an instructions directory by running
+<i><b>ipsvd-cdb</b>(8)</i>. </dd>
+
+<dt><b>-t <i>sec</b> </i></dt>
+<dd>timeout. This option only takes effect if the -i option
+is given. While checking the instructions directory, check the time of last
+access of the file that matches the clients address or hostname if any,
+discard and remove the file if it wasn&rsquo;t accessed within the last <i>sec</i> seconds;
+<b>udpsvd</b> does not discard or remove a file if the user&rsquo;s write permission
+is not set, for those files the timeout is disabled. Default is 0, which
+means that the timeout is disabled. </dd>
+
+<dt><b>-l <i>name</b> </i></dt>
+<dd>local hostname. Do not look up
+the local hostname in DNS, but use <i>name</i> as hostname. By default <b>udpsvd</b> looks
+up the local hostname once at startup.  </dd>
+
+<dt><b>-u <i>[:]user[:group]</b> </i></dt>
+<dd>drop permissions.
+Set uid and gid to the <i>user</i>&rsquo;s uid and gid, as found in <i>/etc/passwd</i>, before
+running <i>prog</i>. If <i>user</i> is followed by a colon and a <i>group</i>, set the gid to
+<i>group</i>&rsquo;s gid, as found in <i>/etc/group</i>, instead of <i>user</i>&rsquo;s gid. If <i>group</i> consists
+of a colon-separated list of group names, set the group ids of all listed
+groups. If <i>user</i> is prefixed with a colon, the <i>user</i> and all <i>group</i> arguments
+are interpreted as uid and gids respectively, and not looked up in the
+password or group file. All supplementary groups are removed. </dd>
+
+<dt><b>-h</b> </dt>
+<dd>Look up the
+client&rsquo;s hostname in DNS. </dd>
+
+<dt><b>-p</b> </dt>
+<dd>paranoid. After looking up the client&rsquo;s hostname
+in DNS, look up the IP addresses in DNS for that hostname, and forget the
+hostname if none of the addresses match the client&rsquo;s IP address. You should
+set this option if you use hostname based instructions. The -p option implies
+the -h option. </dd>
+
+<dt><b>-v</b> </dt>
+<dd>verbose. Print verbose messages to standard output. </dd>
+
+<dt><b>-vv</b> </dt>
+<dd>more
+verbose. Print more verbose messages to standard output. </dd>
+</dl>
+
+<h2><a name='sect5'>See Also</a></h2>
+<i>ipsvd(7)</i>,
+<i>tcpsvd(8)</i>, <i>sslsvd(8)</i>, <i>ipsvd-instruct(5)</i>, <i>ipsvd-cdb(8)</i> <p>
+<i>http://smarden.org/ipsvd/</i>
+
+<h2><a name='sect6'>Author</a></h2>
+Gerrit Pape &lt;pape@smarden.org&gt; <p>
+
+<hr><p>
+<a name='toc'><b>Table of Contents</b></a><p>
+<ul>
+<li><a name='toc0' href='#sect0'>Name</a></li>
+<li><a name='toc1' href='#sect1'>Synopsis</a></li>
+<li><a name='toc2' href='#sect2'>Description</a></li>
+<ul>
+<li><a name='toc3' href='#sect3'>Attention:</a></li>
+</ul>
+<li><a name='toc4' href='#sect4'>Options</a></li>
+<li><a name='toc5' href='#sect5'>See Also</a></li>
+<li><a name='toc6' href='#sect6'>Author</a></li>
+</ul>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>ipsvd - installation</title>
+</head>
+<body>
+<a href="http://smarden.org/pape/">G. Pape</a><br>
+<a href="index.html">ipsvd</a><br>
+<hr>
+<h1>ipsvd - installation</h1>
+<hr>
+<i>ipsvd</i> installs into
+<a href="http://cr.yp.to/slashpackage.html">/package</a>.
+If you don't have a <tt>/package</tt> directory, create it now:
+<pre>
+ # mkdir -p /package
+ # chmod 1755 /package
+</pre>
+Download <a href="ipsvd-1.0.0.tar.gz">ipsvd-1.0.0.tar.gz</a> into
+<tt>/package</tt> and unpack the archive
+<pre>
+ # cd /package
+ # gunzip ipsvd-1.0.0.tar
+ # tar -xpf ipsvd-1.0.0.tar
+ # rm ipsvd-1.0.0.tar
+ # cd net/ipsvd-1.0.0
+</pre>
+If you are installing on Linux or MacOSX, and want to make the
+<a href="sslsvd.8.html">sslsvd</a> and <a href="sslio.8.html">sslio</a>
+programs available, download the
+<a href="http://www.matrixssl.org">matrixssl</a> library version 1.8.3
+(newer versions probably work too) and copy the archive to the
+<tt>src/matrixssl.tar.gz</tt> (alternatively download from the
+<a href="http://ftp.debian.org/debian/pool/main/m/matrixssl/">
+Debian archive</a>)
+<pre>
+ # cp matrixssl-1-8-3-open.tar.gz src/matrixssl.tar.gz
+</pre>
+Now compile and install the <i>ipsvd</i> programs
+<pre>
+ # package/install
+</pre>
+If you want to make the man pages available in the <tt>/usr/local/man/</tt>
+hierarchy, do
+<pre>
+ # package/install-man
+</pre>
+To report success:
+<pre>
+ # mail pape-ipsvd-1.0.0@smarden.org &lt;compile/sysdeps
+</pre>
+If you use <i>ipsvd</i> regularly, please
+<a href="http://smarden.org/pape/#contribution">contribute</a> to the project.
+<p>
+Refer to the <a href="examples.html">examples</a> to learn how to set up
+services with <i>ipsvd</i>.
+<hr>
+<address><a href="mailto:pape@smarden.org">
+Gerrit Pape &lt;pape@smarden.org&gt;
+</a></address>
+</body>
+</html>

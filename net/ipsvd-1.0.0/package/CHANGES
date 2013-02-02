@@ -1,0 +1,314 @@
+ipsvd 1.0.0
+Sun, 15 Jun 2008 17:45:26 +0000
+
+ipsvd 0.14.0
+Sat, 19 Jan 2008 00:17:20 +0000
+  * uidgid.c, uidgid.h: support numerical uid, gids through :uid:gid...
+    (taken from the runit package).
+  * tcpsvd.c, udpsvd.c, sslio.c, ssl_io.c: support numerical uid, gids,
+    and colon-separated list of groups through :uid:gid... with the -u,
+    -U arguments (thx Nikola Vladov).
+  * man/tcpsvd.8, man/udpsvd.8, man/sslsvd.8, man/sslio.8, man/ipsvd.7:
+    adapt.
+
+ipsvd 0.13.0
+Sun, 26 Aug 2007 11:04:21 +0000
+  * ipsvd_check.c, man/ipsvd-instruct.5: lines starting with # are
+    comments, ignore them completely.
+  * ssl_io.c, man/sslio.8: support env variable SSLIO_BAD_CERTIFICATE to
+    optionally accept 'bad certificate's (thx Nikola Vladov).
+  * ssl_io.c, man/sslio.8, man/sslsvd.8: support env variable
+    SSL_HANDSHAKE_TIMEOUT to disconnect a client if the ssl handshake
+    isn't completed within some number of seconds (thx Nikola Vladov);
+    add ENVIRONMENT section to man/sslsvd.8.
+  * Makefile: build with matrixssl-1-8-3-open.
+
+ipsvd 0.12.1
+Sat, 04 Feb 2006 19:14:23 +0000
+  * Makefile: fix build failure with local matrixssl library (thx Charlie
+    Brady).
+
+ipsvd 0.12.0
+Fri, 03 Feb 2006 20:26:27 +0000
+  * ssl_io.c, ssl_io.h: new; split off most code from sslio.c.
+  * sslio.c: main() function only, uses ssl_io() from ssl_io.
+  * tcpsvd.c: be sslsvd using ssl_io() #ifdef SSLSVD.
+  * sslsvd.c: new; #define SSLSVD, #include tcpsvd.c.
+  * man/sslsvd.8: new; man page for sslsvd(8).
+  * man/ipsvd-cdb.8, man/ipsvd-instruct.5, man/ipsvd.7, man/sslio.8,
+    man/tcpsvd.8, man/udpsvd.8: add SEE ALSO sslsvd(8).
+  * sslsvd.check, sslsvd.dist: selftest for sslsvd not yet implemented.
+  * doc/index.html: mention sslsvd.
+
+ipsvd 0.11.1
+Tue, 18 Oct 2005 19:02:18 +0000
+  * sslio.check: tweak sslio program check (fixes testing failure on
+    Debian m68k)
+  * ipsvd_log.c: minor
+  * Makefile, doc/install.html: adapt to matrixssl-1-7-1-open.tar.gz.
+
+ipsvd 0.11.0
+Sun, 20 Feb 2005 16:13:38 +0000
+  * man/tcpsvd.8: typo (thx Bastian Kleineidam).
+  * sslio.check, sslio.dist, sslio.pem: new; ssl program check.
+  * Makefile: don't limit sslio program to linux systype; run ssl program
+    check; minor
+  * package/compile, package/upgrade: adapt.
+  * doc/benefits.html, doc/index.html, doc/install.html: sslio works on
+    MacOSX; adapt.
+
+ipsvd 0.10.1
+Sun, 16 Jan 2005 10:34:19 +0000
+  * sslerror_str.c: fix build failure due to broken header include (thx
+    Charlie Brady)
+  * Makefile: target sslerror_str.o depends on matrixSsl.h.
+  * sslio.c: minor.
+
+ipsvd 0.10.0
+Sat, 15 Jan 2005 11:47:55 +0000
+  * doc/install.html: typo.
+  * sslerror_str.c, sslerror_str.h: new; ssl error strings.
+  * sslio.c: improve logging, error messages, use sslerror_str; new option
+    -c client support to run under tcpclient.
+  * uidgid.c: improve error handling.
+  * Makefile, man/sslio.8: adapt.
+  * package/versions: new.
+  * package/COPYING: adapt, 2005.
+
+ipsvd 0.9.7
+Fri, 03 Dec 2004 10:15:37 +0000
+  * ipsvd_check.c: catch all failures of openreadclose(); disregard
+    hostnames (looked up in dns) starting with a dot; fix cdb check on check
+    hostname instruction with non-existent forward to match instruction
+    directory behavior (deny connection).
+  * ipsvd_hostname.c: properly handle failure and nxdomain/noptr of
+    dns_name4().
+  * doc/examples.html: minor.
+  * tcpsvd.c: bug: socka didn't get updated after ECONNABORTED from accept();
+    fix: re-set socka_size for each connection (thx Sergei Kolobov).
+
+ipsvd 0.9.6
+Mon, 02 Aug 2004 19:18:50 +0000
+  * sslio.c: minor cleanup; adapt few verbose log messages; detect
+    successful handshake through matrixSslHandshakeIsComplete().
+  * doc/install.html, Makefile: use library from src/matrixssl.tar.gz.
+
+ipsvd 0.9.5
+Wed, 14 Jul 2004 19:43:48 +0000
+  * man/sslio.8: notations.
+  * ipsvd_check.c: only parse concurrency instruction if phcc is enabled.
+  * tcpsvd.c: bug: concurrency instruction C0 denied connection, fix: C0
+    correctly disables phcc (thx Torne).
+  * package/compile, package/install-man, package/upgrade: mkdir -p dir ->
+    mkdir -p dir/.; ignore grep's return code (fixes build failure on
+    solaris, thx Uffe Jakobsen).
+  * Makefile: target check-tcpsvd, check-udpsvd: add libraries needed for
+    socket() (fixes testing failure on solaris, thx Uffe Jakobsen); use
+    matrixssl-1.1.2 with sslio.
+  * doc/index.html: minor.
+
+ipsvd 0.9.4
+Sat, 19 Jun 2004 14:47:09 +0000
+  * doc/benefits.html, man/tcpsvd.8: typos (thx David Thiel).
+  * doc/install.html, Makefile: use matrixssl-1.1.1 with sslio.
+  * tcpsvd.check, udpsvd.check: use -llocalhost.
+
+ipsvd 0.9.3
+Wed, 02 Jun 2004 19:27:13 +0000
+  * sslio.c: end network connection when seeing eof from prog; adapt some
+    verbose log messages.
+  * doc/install.html, Makefile: use matrixssl-1.1 with sslio.
+
+ipsvd 0.9.2
+Sat, 15 May 2004 14:11:54 +0000
+  * doc/examples.html: use html named entities; minor.
+  * man/sslio.8: clarify that chroot is done before keys are read (thx
+    Charlie Brady).
+  * sslio.c: include <sys/types.h>; ignore sig_pipe, catch sig_term; send
+    ssl close alert on end of connection, and fatal errors.
+  * use matrixssl-1-0-2.
+
+ipsvd 0.9.1
+Mon, 03 May 2004 17:08:41 +0000
+  * Makefile, sslio.c: fix build failure due to broken header include (thx
+    Charlie Brady).
+  * doc/benefits.html: minor.
+
+ipsvd 0.9.0
+Sat, 01 May 2004 14:29:26 +0000
+  * src/print-cc.sh, src/print-ld.sh: head -1 -> head -n1 (thx Richard A
+    Downing).
+  * sslio.c, man/sslio.8: new sslio program for Linux.
+  * Makefile.matrixssl: new; conditionally build static library.
+  * doc/benefits.html: new; some ipsvd's benefits.
+  * package/check: run program testing process.
+  * doc/examples.html: add sslio bincimaps, sslio fnord.
+  * doc/index.html, doc/install.html: adapt.
+  * package/compile, package/upgrade: conditionally build, install sslio.
+  * package/install: run package/check.
+
+ipsvd 0.8.2
+Mon, 23 Feb 2004 20:15:29 +0000
+  * man/ipsvd-instruct.5: on C0[:msg] per host concurrency is disabled (thx
+    Charlie Brady).
+  * ipsvd_fmt.c: fix bug in parsing phcc message not ending with escaped
+    character.
+  * check-tcpsvd.c, check-udpsvd.c, check-ipsvd-cdb.c: new.
+  * ipsvd-cdb.check: don't echo \; use check-ipsvd-cdb.
+  * tcpsvd.check: use check-tcpsvd.
+  * udpsvd.check: use check-udpsvd.
+  * tcpsvd.dist, udpsvd.dist, ipsvd-cdb.dist: adapt.
+
+ipsvd 0.8.1
+Sun, 22 Feb 2004 14:40:31 +0000
+  * udpsvd: fix usage information output.
+  * doc/upgrade.html: typo.
+  * check-diff, check-dist, check-local: new; run checks on programs.
+  * ipsvd-cdb.check, tcpsvd.check, udpsvd.check: new; check program.
+  * ipsvd-cdb.dist, tcpsvd.dist, udpsvd.dist: new; dist test program output.
+  * Makefile: run program checks by default.
+
+ipsvd 0.8.0
+Fri, 13 Feb 2004 19:42:17 +0000
+  * doc/index.html: typo; related links; minor.
+  * doc/examples.html, man/ipsvd-instruct.5: typos.
+  * doc/install.html: typo (thx Charlie Brady).
+  * byte_zero.c, case.h, case_diffb.c, dns.h, dns_dfd.c, dns_domain.c,
+    dns_dtda.c, dns_ip.c, dns_ipq.c, dns_mx.c, dns_name.c, dns_nd.c,
+    dns_packet.c, dns_random.c, dns_rcip.c, dns_rcrw.c, dns_resolve.c,
+    dns_sortip.c, dns_transmit.c, dns_txt.c, ip4.h, ip4_scan.c, socket.h,
+    socket_bind.c, socket_conn.c, socket_tcp.c, socket_udp.c,
+    stralloc_copy.c, test.c, uint16.h, uint16_pack.c, uint16_unpack.c: new;
+    from djbdns-pd-1.05, public domain.
+  * Makefile: adapt; use included djbdns client library.
+  * doc/install.html, doc/usedietlibc.html: adapt; package build no longer
+    requires djbdns-pd-1.05.
+  * ipsvd_hostname.c, ipsvd_hostname.h, print-cc.sh, print-ld.sh, tcpsvd.c,
+    udpsvd.c: adapt includes; minor.
+  * conf-djbdnsinc, conf-djbdnslib: remove; obsolete.
+  * package/COPYING, package/README: 2004.
+  * package/compile, package/install-man, package/upgrade: minor cleanup.
+
+ipsvd 0.7.1
+Wed, 26 Nov 2003 09:14:35 +0000
+  * Makefile: target ipsvd-cdb: add libraries needed for socket() (fixes
+    build failure on solaris, thx Uffe Jakobsen).
+  * man/ipsvd.7: typo.
+  * ipsvd-cdb.c: bug: deny-entries possibly became instruction-entries in
+    the cdb, fix: reset stralloc before ipsvd_check() (thx Lukas Beeler).
+  * doc/index.html: minor.
+
+ipsvd 0.7.0
+Tue, 21 Oct 2003 15:59:30 +0000
+  * doc/examples.html: update bincimaps example; add check hostname
+    instruction sample.
+  * ipsvd_check.c, ipsvd_check.h: support check host instructions; change
+    some internals; last concurrency instruction wins.
+  * man/ipsvd-instruct.5: document check host instructions; update
+    concurrency instruction.
+  * ipsvd-cdb.c: consider filenames starting with a single dot; skip
+    filenames starting with two dots; minor.
+  * man/ipsvd-cdb.8: adapt.
+  * Makefile: minor.
+  * doc/upgrade.html: new.
+  * doc/index.html adapt.
+  * tcpsvd.c, udpsvd.c: minor changes in warning output.
+
+ipsvd 0.6.1
+Tue, 14 Oct 2003 11:17:29 +0000
+  * ipsvd_scan.c: include sys/types.h (fixes build failure on freebsd,
+    thx Sergei Kolobov).
+  * trysocketlib.c: new; check for libraries needed for socket() on some
+    systems (solaris, thx Uffe Jakobsen).
+  * Makefile: adapt.
+
+ipsvd 0.6.0
+Mon, 29 Sep 2003 10:59:15 +0000
+  * man/ipsvd-instruct.5: minor.
+  * ipsvd_scan.h, ipsvd_scan.c: new; ipsvd_scan_port(): get port number
+    from name or number (thx Matthias Andree for sample code).
+  * tcpsvd.c, udpsvd.c: support name from /etc/services as command line
+    option port.
+  * man/tcpsvd.8, man/udpsvd.8, Makefile: adapt.
+  * man/ipsvd.7: -u option is now mandatory.
+  * udpsvd.c, man/udpsvd.8: stdout is redirected to stderr.
+  * doc/index.html: minor.
+
+ipsvd 0.5.0
+Wed, 06 Aug 2003 15:39:11 +0200
+  * doc/examples.html: typo (dead link, thx clemens fischer).
+  * man/ipsvd.7, man/tcpsvd.8, man/udpsvd.8: typos; wording.
+  * uidgid.c, uidgid.h: new; get uid/gid by name.
+  * ipsvd-cdb.c, ipsvd_check.h, ipsvd_check.c, ipsvd_hostname.c, tcpsvd.c,
+    udpsvd.c: code cleanup.
+
+ipsvd 0.4.1
+Mon, 12 May 2003 10:18:05 +0200
+  * ipsvd_fmt.c: minor cleanup.
+  * tcpsvd.c: include sys/types.h (really; thx clemens fischer); minor
+    cleanup.
+  * doc/examples.html: add qmail-smtpd example; minor adaptations.
+  * man/ipsvd-instruct.5, man/ipsvd.7: don't remove files without write
+    permission set on timeout.
+  * tcpsvd.c, udpsvd.c: support -uuser[:group].
+  * man/tcpsvd.8, man/udpsvd.8: adapt.
+
+ipsvd 0.4.0
+Mon, 05 May 2003 13:15:45 +0200
+  * ipsvd_check.c, ipsvd_check.h, tcpsvd.c: optionally send alert message
+    to client when denying connection due to per host concurrency limit.
+  * man/ipsvd-instruct.5, man/tcpsvd.8: adapt.
+  * ipsvd_fmt.c, ipsvd_fmt.h: ipsvd_fmt_msg(): convert backslash-escaped
+    characters in message.
+  * package/upgrade: typo.
+  * doc/examples.html: new.
+  * doc/index.html: adapt.
+
+ipsvd 0.3.4
+Tue, 29 Apr 2003 14:56:43 +0200
+  * ipsvd_check.c, ipsvd_check.h: support -t option: timeout for last
+    access of files in an instructions directory; code cleanup.
+  * tcpsvd.c, udpsvd.c: support -t option.
+  * man/ipsvd.7, man/tcpsvd.8, man/udpsvd.8: adapt.
+  * doc/install.html: build static djbdns client library only.
+  * doc/usedietlibc.html: add instructions on how to build the djbdns client
+    library with the diet libc.
+
+ipsvd 0.3.0
+Sat, 12 Apr 2003 16:40:02 +0200
+  * doc/install.html: typo.
+  * ipsvd-cdb.c: adapt; typo.
+  * ipsvd_check.c, ipsvd_check.h: support hostname based instructions and
+    catchall file 0; support removing environment vars.
+  * ipsvd_hostname.c, ipsvd_hostname.h: new; lookup hostname in dns.
+  * tcpsvd.c, udpsvd.c: remove -n option; support hostname based
+    instructions; log localip:localhost info; add -l option; add -p option;
+    replace -H with -h, by default do not look up hostname; add -vv option;
+    slightly change log messages.
+  * ipsvd_phcc.c, ipsvd_phcc.h: new; connection tracking, per host
+    concurrency.
+  * tcpsvd.c: add -C option, support per host concurrency limit; include
+    <sys/types.h> (BSD OS needs it, thx clemens fischer).
+  * man/ipsvd-instruct.5: document hostname based instructions, concurrency
+    instructions, catchall file 0, removing environment vars.
+  * man/tcpsvd.8, man/udpsvd.8: adapt.
+  * man/ipsvd.7: add -hpl options.
+  * Makefile: cleanup.
+  * doc/usedietlibc.html: new.
+
+ipsvd 0.2.0
+Sat, 22 Mar 2003 00:51:26 +0100
+  * code cleanup
+  * 1st public version.
+
+ipsvd 0.1.6
+Thu, 20 Mar 2003 22:24:53 +0100
+  * installs into /package.
+  * man/ipsvd.7, man/ipsvd-instruct.5: new.
+  * adapt manpages
+  * adapt documentation.
+  * tcpsvd.c, udpsvd.c: code cleanup.
+
+ipsvd 0.1.3
+Tue, 18 Mar 2003 22:27:36 +0100
+  * initial version.

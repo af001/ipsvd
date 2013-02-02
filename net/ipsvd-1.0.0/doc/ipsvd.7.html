@@ -1,0 +1,98 @@
+
+
+
+<html>
+<head>
+<title>ipsvd(7) manual page</title>
+</head>
+<body bgcolor='white'>
+<a href='http://smarden.org/pape/'>G. Pape</a><br><a href='index.html'>ipsvd</a><hr>
+
+<h2><a name='sect0'>Name</a></h2>
+ipsvd - Internet protocol service daemon 
+<h2><a name='sect1'>Synopsis</a></h2>
+<i>ipsvd</i> [-hp] [-l <i>name</i>]
+[-u <i>user</i>] [-i <i>dir</i>|-x <i>cdb</i>] [-t <i>sec</i>] <i>host</i> <i>port</i> <i>prog</i> 
+<h2><a name='sect2'>Description</a></h2>
+An implementation
+of an internet protocol service daemon provides the command line interface
+as shown in SYNOPSIS above (additional options are possible), and supports
+pre-defined instructions for handling connections through files in a instructions
+directory, and through a constant database, as described in <i><b>ipsvd-instruct</b>(5)</i>.
+<p>
+Currently there are two implementations of an internet protocol service
+daemon: a TCP/IP service daemon, <i><b>tcpsvd</b>(8)</i>, and an UDP/IP service daemon,
+<i><b>udpsvd</b>(8)</i>. More internet protocol service daemons may appear in the future.
+
+<h2><a name='sect3'>Options</a></h2>
+
+<dl>
+
+<dt><b>-i <i>dir</b> </i></dt>
+<dd>read instructions for handling new connections from the instructions
+directory <i>dir</i>. See <i><b>ipsvd-instruct</b>(5)</i> for details. </dd>
+
+<dt><b>-x <i>cdb</b> </i></dt>
+<dd>read instructions
+for handling new connections from the constant database <i>cdb</i>. The constant
+database normally is created from an instructions directory by running
+<i><b>ipsvd-cdb</b>(8)</i>. </dd>
+
+<dt><b>-t <i>sec</b> </i></dt>
+<dd>timeout. This option only takes effect if the -i option
+is given. While checking the instructions directory, check the time of last
+access of the file that matches the clients address or hostname if any,
+discard and remove the file if it wasn&rsquo;t accessed within the last <i>sec</i> seconds;
+<b>ipsvd</b> does not discard or remove a file if the user&rsquo;s write permission is
+not set, for those files the timeout is disabled. Default is 0, which means
+that the timeout is disabled. </dd>
+
+<dt><b>-l <i>name</b> </i></dt>
+<dd>local hostname. Do not look up the local
+hostname in DNS, but use <i>name</i> as hostname. </dd>
+
+<dt><b>-u <i>[:]user[:group]</b> </i></dt>
+<dd>drop permissions.
+Set uid and gid to the <i>user</i>&rsquo;s uid and gid, as found in <i>/etc/passwd</i>, before
+running <i>prog</i>. If <i>user</i> is followed by a colon and a <i>group</i>, set the gid to
+<i>group</i>&rsquo;s gid, as found in <i>/etc/group</i>, instead of <i>user</i>&rsquo;s gid. If <i>group</i> consists
+of a colon-separated list of group names, set the group ids of all listed
+groups. If <i>user</i> is prefixed with a colon, the <i>user</i> and all <i>group</i> arguments
+are interpreted as uid and gids respectively, and not looked up in the
+password or group file. All supplementary groups are removed. </dd>
+
+<dt><b>-h</b> </dt>
+<dd>Look up the
+client&rsquo;s hostname in DNS. </dd>
+
+<dt><b>-p</b> </dt>
+<dd>paranoid. After looking up the client&rsquo;s hostname
+in DNS, look up the IP addresses in DNS for that hostname, and forget about
+the hostname if none of the addresses match the client&rsquo;s IP address. You
+should set this option if you use hostname based instructions. The -p option
+implies the -h option. </dd>
+</dl>
+
+<h2><a name='sect4'>Signals</a></h2>
+If an <b>ipsvd</b> receives a TERM signal, it exists
+with 0. 
+<h2><a name='sect5'>See Also</a></h2>
+<i>tcpsvd(8)</i>, <i>sslsvd(8)</i>, <i>udpsvd(8)</i>, <i>ipsvd-instruct(5)</i>, <i>ipsvd-cdb(8)</i>
+<p>
+<i>http://smarden.org/ipsvd/</i> 
+<h2><a name='sect6'>Author</a></h2>
+Gerrit Pape &lt;pape@smarden.org&gt; <p>
+
+<hr><p>
+<a name='toc'><b>Table of Contents</b></a><p>
+<ul>
+<li><a name='toc0' href='#sect0'>Name</a></li>
+<li><a name='toc1' href='#sect1'>Synopsis</a></li>
+<li><a name='toc2' href='#sect2'>Description</a></li>
+<li><a name='toc3' href='#sect3'>Options</a></li>
+<li><a name='toc4' href='#sect4'>Signals</a></li>
+<li><a name='toc5' href='#sect5'>See Also</a></li>
+<li><a name='toc6' href='#sect6'>Author</a></li>
+</ul>
+</body>
+</html>

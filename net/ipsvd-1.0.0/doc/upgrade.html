@@ -1,0 +1,76 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>ipsvd - upgrading from previous versions</title>
+</head>
+<body>
+<a href="http://smarden.org/pape/">G. Pape</a><br>
+<a href="index.html">ipsvd</a><br>
+<hr>
+<h1>ipsvd - upgrading from previous versions</h1>
+<hr>
+<h3>0.14.0 to 1.0.0</h3>
+No further action from you is required.
+<h3>0.13.0 to 0.14.0</h3>
+The command line options to tell the
+<a href="tcpsvd.8.html">tcpsvd</a>, <a href="udpsvd.8.html">udpsvd</a>,
+<a href="sslsvd.8.html">sslsvd</a>, and <a href="sslio.8.html">sslio</a>
+programs to drop permissions have been made more flexible to allow
+specifying numerial uids and gids, as well as a list of multiple groups or
+gids.
+<h3>0.12.0 or 0.12.1 to 0.13.0</h3>
+The ssl programs have been improved slightly, and build against the
+matrixssl library version 1.8.3.
+<h3>0.11.x to 0.12.0 or 0.12.1</h3>
+This version introduces the new <a href="sslsvd.8.html">sslsvd</a> SSLv3
+TCP/IP service daemon.
+<a href="sslsvd.8.html">sslsvd</a> integrates the
+<a href="sslio.8.html">sslio</a> program into
+<a href="tcpsvd.8.html">tcpsvd</a>, so that initializing the SSL session
+and reading the SSL key and certificate doesn't need to be done for each
+incoming connection, but only once on startup of the service daemon.
+<h3>0.10.1 to 0.11.0 or 0.11.1</h3>
+The <a href="sslio.8.html">sslio</a> program also runs on MacOSX, see the
+<a href="install.html">installation insructions</a> on how to enable it in
+the build and testing process.
+<h3>0.9.x to 0.10.1</h3>
+Client support has been added to the <a href="sslio.8.html">sslio</a>
+program to have it run under <tt>tcpclient</tt>.
+The logging, especially for ssl warnings and errors, has been improved, and
+the documentation updated.
+<p>
+Here's a sample on how to use <a href="sslio.8.html">sslio</a> in client
+mode with <tt>tcpclient</tt>, a <tt>https@</tt> program derived from
+ucspi-tcp's <tt>http@</tt> program:
+<pre>
+ #!/bin/sh
+ echo "GET /${2-} HTTP/1.0
+ Host: ${1-0}:${3-443}
+ " | tcpclient -RHl0 -- "${1-0}" "${3-443}" sslio -c sh -c '
+   addcr >&7
+   exec delcr <&6
+ ' | awk '/^$/ { body=1; next } { if (body) print }'
+</pre>
+<h3>0.8.0 or 0.8.2 to 0.9.x</h3>
+This version introduces the new <a href="sslio.8.html">sslio</a> program
+(for Linux only), which can be used to encrypt network connections using
+SSLv3.
+A new web page describing some of <i>ipsvd</i>'s
+<a href="benefits.html">benefits</a> has been added to the documentation.
+<h3>0.7.0 or 0.7.1 to 0.8.0 or 0.8.2</h3>
+No further action from you is required.
+<h3>0.6.1 to 0.7.0 or 0.7.1</h3>
+A new type of instruction has been added.
+<i>ipsvd</i> now can be told to look up IP addresses of (dynamic)
+hostnames on incoming connections, and to handle a connection through
+different instructions if the client's IP address matches one of these
+addresses.
+See <a href="ipsvd-instruct.5.html">ipsvd-instruct</a> for details.
+The <a href="examples.html">examples</a> have been updated slightly,
+and additionally includes an example of the new check host instructions. 
+<hr>
+<address><a href="mailto:pape@smarden.org">
+Gerrit Pape &lt;pape@smarden.org&gt;
+</a></address>
+</body>
+</html>

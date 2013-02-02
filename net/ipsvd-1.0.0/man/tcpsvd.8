@@ -1,0 +1,229 @@
+.TH tcpsvd 8
+.SH NAME
+tcpsvd \- TCP/IP service daemon
+.SH SYNOPSIS
+.B tcpsvd
+[\-hpEvv] [\-c
+.I n\fR] [\-C
+.I n\fR:\fImsg\fR] [\-b
+.I n\fR] [\-u
+.I user\fR] [\-l
+.I name\fR] [\-i
+.IR dir |\-x
+.IR cdb ]
+[ \-t
+.IR sec ]
+.I host
+.I port
+.I prog
+.SH DESCRIPTION
+.B tcpsvd
+creates a TCP/IP socket, binds it to the address
+.IR host :\fIport\fR,
+and listens on the socket for incoming connections.
+.P
+On each incoming connection,
+.B tcpsvd
+conditionally runs a program, with standard input reading from the socket,
+and standard output writing to the socket, to handle this connection.
+.B tcpsvd
+keeps listening on the socket for new connections, and can handle multiple
+connections simultaneously.
+.P
+.B tcpsvd
+optionally checks for special instructions depending on the IP address or
+hostname of the client that initiated the connection, see
+.BR ipsvd-instruct (5).
+.SH OPTIONS
+.TP
+.I host
+.I host
+either is a hostname, or a dotted-decimal IP address, or 0.
+If
+.I host
+is 0,
+.B tcpsvd
+accepts connections to any local IP address.
+.TP
+.I port
+.B tcpsvd
+accepts connections to
+.IR host :\fIport\fR.
+.I port
+may be a name from /etc/services or a number.
+.TP
+.I prog
+.I prog
+consists of one or more arguments.
+For each connection,
+.B tcpsvd
+normally runs
+.IR prog ,
+with file descriptor 0 reading from the network, and file descriptor 1
+writing to the network.
+By default it also sets up TCP-related environment variables, see
+.BR tcp-environ (5)
+.TP
+.B \-i \fIdir
+read instructions for handling new connections from the instructions
+directory
+.IR dir .
+See
+.BR ipsvd-instruct (5)
+for details.
+.TP
+.B \-x \fIcdb
+read instructions for handling new connections from the constant database
+.IR cdb .
+The constant database normally is created from an instructions directory by
+running
+.BR ipsvd-cdb (8).
+.TP
+.B \-t \fIsec
+timeout.
+This option only takes effect if the \-i option is given.
+While checking the instructions directory, check the time of last access of
+the file that matches the clients address or hostname if any, discard and
+remove the file if it wasn't accessed within the last
+.I sec
+seconds;
+.B tcpsvd
+does not discard or remove a file if the user's write permission is not set,
+for those files the timeout is disabled.
+Default is 0, which means that the timeout is disabled.
+.TP
+.B \-l \fIname
+local hostname.
+Do not look up the local hostname in DNS, but use
+.I name
+as hostname.
+This option must be set if
+.B tcpsvd
+listens on port 53 to avoid loops.
+.TP
+.B \-u \fI[:]user[:group]
+drop permissions.
+Set uid and gid to the
+.IR user 's
+uid and gid, as found in
+.IR /etc/passwd ,
+before running
+.IR prog .
+If
+.I user
+is followed by a colon and a
+.IR group ,
+set the gid to
+.IR group 's
+gid, as found in
+.IR /etc/group ,
+instead of
+.IR user 's
+gid.
+If
+.I group
+consists of a colon-separated list of group names,
+set the group ids of all listed groups.
+If
+.I user
+is prefixed with a colon, the
+.I user
+and all
+.I group
+arguments are interpreted as uid and gids respectively, and not looked up in
+the password or group file.
+All supplementary groups are removed.
+.TP
+.B \-c \fIn
+concurrency.
+Handle up to
+.I n
+connections simultaneously.
+Default is 30.
+If there are
+.I n
+connections active,
+.B tcpsvd
+defers acceptance of a new connection until an active connection is closed.
+.TP
+.B \-C \fIn\fR[:\fImsg\fR]
+per host concurrency.
+Allow only up to
+.I n
+connections from the same IP address simultaneously.
+If there are
+.I n
+active connections from one IP address, new incoming connections from this IP
+address are closed immediately.
+If
+.I n
+is followed by
+.RI : msg\fR,
+the message
+.I msg
+is written to the client if possible, before closing the connection.
+By default
+.I msg
+is empty.
+See
+.BR ipsvd-instruct (5)
+for supported escape sequences in
+.IR msg .
+
+For each accepted connection, the current per host concurrency is available
+through the environment variable
+.IR TCPCONCURRENCY .
+.I n
+and
+.I msg
+can be overwritten by
+.BR ipsvd (7)
+instructions, see
+.BR ipsvd-instruct (5). 
+By default
+.B tcpsvd
+doesn't keep track of connections.
+.TP
+.B \-h
+Look up the client's hostname in DNS.
+.TP
+.B \-p
+paranoid.
+After looking up the client's hostname in DNS, look up the IP addresses in
+DNS for that hostname, and forget about the hostname if none of the addresses
+match the client's IP address.
+You should set this option if you use hostname based instructions.
+The \-p option implies the \-h option.
+.TP
+.B \-b \fIn
+backlog.
+Allow a backlog of approximately
+.I n
+TCP SYNs.
+On some systems
+.I n
+is silently limited.
+Default is 20.
+.TP
+.B \-E
+no special environment.
+Do not set up TCP-related environment variables.
+.TP
+.B \-v
+verbose.
+Print verbose messsages to standard output.
+.TP
+.B \-vv
+more verbose.
+Print more verbose messages to standard output.
+.SH SEE ALSO
+ipsvd(7),
+sslsvd(8),
+udpsvd(8),
+ipsvd-instruct(5),
+ipsvd-cdb(8),
+sslio(8)
+.P
+http://smarden.org/ipsvd/
+.SH AUTHOR
+Gerrit Pape <pape@smarden.org>

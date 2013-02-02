@@ -1,0 +1,164 @@
+
+
+
+<html>
+<head>
+<title>ipsvd-instruct(5) manual page</title>
+</head>
+<body bgcolor='white'>
+<a href='http://smarden.org/pape/'>G. Pape</a><br><a href='index.html'>ipsvd</a><hr>
+
+<h2><a name='sect0'>Name</a></h2>
+ipsvd-instruct - format of the <i>ipsvd(8)</i> instructions directory 
+<h2><a name='sect1'>Description</a></h2>
+The
+internet protocol service daemons, <i><b>ipsvd</b>(7)</i>, can be told to read and follow
+instructions from a directory on incoming connections to the socket they
+listen on. <p>
+For mostly static instructions or for performance reasons, it
+is possible to compile the instructions from a directory into a constant
+database (cdb) with <i><b>ipsvd-cdb</b>(8)</i> for faster lookup, and to tell <i><b>ipsvd</b>(7)</i>
+to read the instructions from there. 
+<h2><a name='sect2'>Matching</a></h2>
+On each incoming connection,
+the <i><b>ipsvd</b>(7)</i> matches the client&rsquo;s IP address against files in the instructions
+directory. For example, the IP address <i>a.b.c.d</i> which reverse resolves to <i>moa.bit.smarden.org</i>
+is matched against the following files in the instructions directory, in
+this order, first match wins: 
+<ol>
+.<li><i>a.b.c.d</i> </li>.<li><i>a.b.c</i> </li>.<li><i>a.b</i> </li>.<li><i>a</i> </li>
+</ol>
+<p>
+If the client&rsquo;s hostname has
+been successfully looked up in DNS: 
+<ol>
+.<li><i>moa.bit.smarden.org</i> </li>.<li><i>bit.smarden.org</i> </li>.<li><i>smarden.org</i>
+</li>.<li><i>org</i> </li>
+</ol>
+<p>
+And finally the catchall file &lsquo;&lsquo;0&rsquo;&rsquo; (zero): 
+<ol>
+.<li><i>0</i> </li>
+</ol>
+<p>
+After successfully matching
+a client&rsquo;s IP address or hostname against the instructions directory, <i><b>ipsvd</b>(7)</i>
+examines the file that matched the IP address or hostname, and acts accordingly:
+
+<ol>
+.<li>If neither the user&rsquo;s read permission, nor the user&rsquo;s execute permission
+is set for the file, the connection is closed immediately. </li>.<li>If the file has
+the user&rsquo;s execute permission set, <i><b>ipsvd</b>(7)</i> reads the contents of the file
+and runs <i>/bin/sh</i> -c &rsquo;&lt;contents&gt;&rsquo; instead of the default program <i>prog</i> given at
+the command line for this connection. </li>.<li>If the file has the user&rsquo;s read permission
+set, <i><b>ipsvd</b>(7)</i> reads the contents of the file and interprets each line as
+an instruction for this connection (see below). </li>
+</ol>
+<p>
+If the client&rsquo;s IP address
+or hostname doesn&rsquo;t match any file in the instructions directory, the default
+action is taken (the program <i>prog</i> is run to handle the connection). 
+<h2><a name='sect3'>Instructions</a></h2>
+If
+<i><b>ipsvd</b>(7)</i> is given instructions for an incoming connection, it reads the
+corresponding file and interprets each line as follows. The file may be
+empty, meaning that there is no special instruction. <p>
+Empty lines and lines
+starting with &lsquo;&lsquo;#&rsquo;&rsquo; are ignored. 
+<dl>
+
+<dt><b>+</b><i>VAR=VALUE</i> </dt>
+<dd>environment. If the line starts with
+a plus (&lsquo;&lsquo;+&rsquo;&rsquo;), and the string following the plus contains a &lsquo;&lsquo;=&rsquo;&rsquo;, <i><b>ipsvd</b>(7)</i> puts
+the string following the plus into the environment before starting <i>prog</i>
+to handle the connection. If the string following the plus doesn&rsquo;t contain
+a &lsquo;&lsquo;=&rsquo;&rsquo;, <i><b>ipsvd</b>(7)</i> makes sure that the environment variable with the name string
+is not set. </dd>
+
+<dt><b>C</b><i>num[:<i>msg</i>]</i> </dt>
+<dd>concurrency. If the line starts with a &lsquo;&lsquo;C&rsquo;&rsquo;, and is followed
+by a number, the per host concurrency limit for the IP address that initiated
+the connection is set to this number. If <i>num</i> is zero, per host concurrency
+limit is disabled. If <i>num</i> is followed by &lsquo;&lsquo;:<i>msg&rsquo;&rsquo;,</i> the message <i>msg</i> is written
+to this client if possible, if the per host concurrency limit is reached.
+
+<p> <i>msg</i> may contain backslash-escaped characters as follows: &lsquo;&lsquo;\\&rsquo;&rsquo; is converted
+to a single backslash, &lsquo;&lsquo;\n&rsquo;&rsquo; is converted to a new line character, and &lsquo;&lsquo;\r&rsquo;&rsquo; is
+converted to a carriage return. 
+<p> On multiple concurrency instructions the
+last processed concurrency instruction is considered. Not all <i><b>ipsvd</b>(7)</i>&rsquo;s
+support per host concurrency. </dd>
+
+<dt><b>=</b><i>hostname[:<i>forward</i>]</i> </dt>
+<dd>check hostname. If the
+line starts with a &lsquo;&lsquo;=&rsquo;&rsquo;, and is followed by a hostname, <i><b>ipsvd</b>(7)</i> looks up
+the IP addresses for <i>hostname</i> in DNS and checks if the client&rsquo;s IP address
+matches one of these IP addresses. If so, <i><i>ipsvd</i>(7)</i> stops processing the
+instructions here and runs <i>prog</i>. If <i>hostname</i> is followed a colon and <i>forward</i>,
+<i><b>ipsvd</b>(7)</i> now examines the file <i>forward</i> and acts accordingly, instead of
+running <i>prog</i>. All check hostname instructions in <i>forward</i> are ignored. If
+<i>forward</i> does not exist, the connection is closed. 
+<p> <i>hostname</i> may be &lsquo;&lsquo;0&rsquo;&rsquo; (zero),
+matching any IP address. 
+<p> Note: Using check hostname instructions can cause
+significant delay while responding to connection attempts, caused by DNS
+lookups. </dd>
+</dl>
+<p>
+If <i><b>ipsvd</b>(7)</i> cannot interpret a line, it prints a warning, discards
+the line, and continues with the next instruction if any. <p>
+After processing
+all instructions, <i><b>ipsvd</b>(7)</i> runs <i>prog</i>. If the file contains at least one
+check hostname instruction, and none was successful, it closes the connection
+instead of running <i>prog</i>. 
+<h2><a name='sect4'>Example Instructions</a></h2>
+
+<dl>
+
+<dt>+MEMORY=20000 </dt>
+<dd>This instruction
+causes the environment variable &lsquo;&lsquo;MEMORY&rsquo;&rsquo; with the value &lsquo;&lsquo;20000&rsquo;&rsquo; to be available
+to the program <i>prog</i> that handles the connection. </dd>
+
+<dt>+DEBUG= </dt>
+<dd>This instruction
+adds the variable &lsquo;&lsquo;DEBUG&rsquo;&rsquo; with an empty value to the environment. </dd>
+
+<dt>+LOGNAME
+</dt>
+<dd>This instructions makes sure that the environment variable &lsquo;&lsquo;LOGNAME&rsquo;&rsquo; is unset
+when running <i>prog</i>. </dd>
+
+<dt>C16 </dt>
+<dd>Set the per host concurrency to 16. A connection will
+be closed silently if there are already 16 active connections from this
+client&rsquo;s IP address. </dd>
+
+<dt>=floyd.dyn.smarden.org:127.0.0.1 </dt>
+<dd>Check IP address of the dynamic
+hostname <i>floyd.dyn.smarden.org</i>. If one of the IP addresses <i>floyd.dyn.smarden.org</i>
+currently resolves to matches the client&rsquo;s IP address, handle the connection
+through the file <i>127.0.0.1</i> in the instructions directory. </dd>
+</dl>
+
+<h2><a name='sect5'>See Also</a></h2>
+<i>ipsvd(7)</i>,
+<i>ipsvd-cdb(8)</i>, <i>tcpsvd(8)</i>, <i>sslsvd(8)</i>, <i>udpsvd(8)</i>, <i>sslio(8)</i> <p>
+<i>http://smarden.org/ipsvd/</i>
+
+<h2><a name='sect6'>Author</a></h2>
+Gerrit Pape &lt;pape@smarden.org&gt; <p>
+
+<hr><p>
+<a name='toc'><b>Table of Contents</b></a><p>
+<ul>
+<li><a name='toc0' href='#sect0'>Name</a></li>
+<li><a name='toc1' href='#sect1'>Description</a></li>
+<li><a name='toc2' href='#sect2'>Matching</a></li>
+<li><a name='toc3' href='#sect3'>Instructions</a></li>
+<li><a name='toc4' href='#sect4'>Example Instructions</a></li>
+<li><a name='toc5' href='#sect5'>See Also</a></li>
+<li><a name='toc6' href='#sect6'>Author</a></li>
+</ul>
+</body>
+</html>
