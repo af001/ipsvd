@@ -5,7 +5,7 @@
 apt update && apt -y install git gcc-multilib-mipsel-linux-gnu gcc-multilib-powerpc-linux-gnu gcc-multilib-arm-linux-gnueabi gcc-multilib-mips-linux-gnu
 
 # Get ipsvd source
-git clone https://github.com/alexgirao/ipsvd.git
+git clone https://github.com/af001/ipsvd.git
 cd ipsvd/net/ipsvd-1.0.0
 
 # Alternate download
